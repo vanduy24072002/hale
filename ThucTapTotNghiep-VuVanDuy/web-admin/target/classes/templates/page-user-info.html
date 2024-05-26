@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org/">
+<head th:insert="fragments/fragments.html :: head"></head>
+<body class="app sidebar-mini">
+<!-- Navbar-->
+<header th:insert="fragments/fragments.html :: header"></header>
+<!-- Sidebar menu-->
+<div class="app-sidebar__overlay" data-toggle="sidebar"></div>
+<aside th:insert="fragments/fragments.html :: sidebar(pageType='', user=${user})"></aside>
+<main class="app-content">
+  <div class="row user">
+    <div class="col-md-12">
+      <div class="profile">
+        <div class="info"><img class="user-img" th:src="'data:image/jpeg;base64,' + ${user.images}">
+          <h4 th:text="${user.firstName + ' ' + user.lastName}"></h4>
+          <p th:text="${user.role == 'ADMIN' ? 'Quản trị viên' : (user.role == 'SUPER_ADMIN' ? 'Quản trị viên cấp cao' : 'Khác')}"></p>
+        </div>
+        <div class="cover-image"></div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="tile p-0">
+        <ul class="nav flex-column nav-tabs user-tabs">
+          <li class="nav-item"><a th:class="${message ==null ?  'nav-link active' : 'nav-link'}"  href="#user-timeline"
+                                  data-bs-toggle="tab">Thông tin</a></li>
+          <li class="nav-item"><a th:class="${message !=null ?  'nav-link active' : 'nav-link'}" href="#user-settings" data-bs-toggle="tab">Mật khẩu</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="col-md-8">
+      <div class="tab-content">
+        <div th:class="${message ==null ?  'tab-pane active' : 'tab-pane fade'}" id="user-timeline">
+          <div class="tile user-settings">
+            <h4 class="line-head">Thay đổi thông tin người dùng</h4>
+            <form th:action="@{/admin/updateInfoUser(id=${user.id == null ? null : user.id})}" method="post" enctype="multipart/form-data">
+              <div class="row mb-5">
+                <div class="col-md-5">
+                  <label>First Name</label>
+                  <input class="form-control" type="text" th:name="firstName" th:value="${user.firstName}">
+                </div>
+                <div class="col-md-5">
+                  <label>Last Name</label>
+                  <input class="form-control" type="text" th:name="lastName" th:value="${user.lastName}">
+                </div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Hình ảnh</label>
+                <input id="imageInput" class="form-control" type="file" th:name="image">
+              </div>
+<!--              <div class="row">-->
+<!--                <div class="col-md-8 mb-4">-->
+<!--                  <label>Email</label>-->
+<!--                  <input class="form-control" type="text">-->
+<!--                </div>-->
+<!--                <div class="clearfix"></div>-->
+<!--                <div class="col-md-8 mb-4">-->
+<!--                  <label>Mobile No</label>-->
+<!--                  <input class="form-control" type="text">-->
+<!--                </div>-->
+<!--                <div class="clearfix"></div>-->
+<!--                <div class="col-md-8 mb-4">-->
+<!--                  <label>Office Phone</label>-->
+<!--                  <input class="form-control" type="text">-->
+<!--                </div>-->
+<!--                <div class="clearfix"></div>-->
+<!--                <div class="col-md-8 mb-4">-->
+<!--                  <label>Home Phone</label>-->
+<!--                  <input class="form-control" type="text">-->
+<!--                </div>-->
+<!--              </div>-->
+              <div class="row mb-10">
+                <div class="col-md-12">
+                  <button class="btn btn-primary" type="submit"><i
+                          class="bi bi-check-circle-fill me-2"></i> Save
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div th:class="${message !=null ?  'tab-pane active' : 'tab-pane fade'}" id="user-settings">
+          <div class="tile user-settings">
+            <h4 class="line-head">Thay đổi mật khẩu</h4>
+            <form th:action="@{/admin/changePassword(id=${user.id == null ? null : user.id})}" method="post" >
+<!--              <div class="row mb-4">-->
+<!--                <div class="col-md-4">-->
+<!--                  <label>First Name</label>-->
+<!--                  <input class="form-control" type="text">-->
+<!--                </div>-->
+<!--                <div class="col-md-4">-->
+<!--                  <label>Last Name</label>-->
+<!--                  <input class="form-control" type="text">-->
+<!--                </div>-->
+<!--              </div>-->
+              <div class="row">
+
+                <div class="mb-3">
+                  <label class="form-label">Nhập mật khẩu cũ</label>
+                  <input class="form-control" type="password" placeholder="Mật khẩu cũ" th:name="passwordOld" >
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Nhập mật khẩu mới</label>
+                  <input class="form-control" type="password" placeholder="Mật khẩu mới" th:name="passwordNew" >
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Nhập lại mật khẩu</label>
+                  <input class="form-control" type="password" placeholder="Nhập lại mật khẩu" th:name="passwordConfirm" >
+                </div>
+              </div>
+              <div  class="mb-3" th:if="${message}" th:style="${message eq 'Thay đổi mật khẩu thành công' ? 'color: blue;' : 'color: red;'}">
+                <p th:text="${message}"></p>
+              </div>
+              <div class="row mb-10">
+                <div class="col-md-12">
+                  <button class="btn btn-primary" type="submit"><i
+                          class="bi bi-check-circle-fill me-2"></i> Save
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="/js/jquery-3.7.0.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/main.js"></script>
+<!-- Page specific javascripts-->
+<link rel="stylesheet" href="https://cdn.datatables.net/v/bs5/dt-1.13.4/datatables.min.css">
+<!-- Data table plugin-->
+<script type="text/javascript" src="/js/plugins/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/js/plugins/dataTables.bootstrap.min.js"></script>
+<script type="text/javascript">$('#sampleTable').DataTable();</script>
+<!-- Google analytics script-->
+<script type="text/javascript">
+  const deleteButton = document.getElementById('deleteButton');
+  const confirmDialog = document.getElementById('confirmDialog');
+  const yesButton = document.getElementById('yesButton');
+  const noButton = document.getElementById('noButton');
+
+  deleteButton.addEventListener('click', () => {
+    confirmDialog.style.display = 'block';
+  });
+
+  noButton.addEventListener('click', () => {
+    confirmDialog.style.display = 'none';
+  });
+
+  yesButton.addEventListener('click', () => {
+    var bookId = deleteButton.getAttribute('data-id');
+    var detailUrl = "/admin/delete?id=" + bookId;
+
+    // Chuyển hướng đến trang chi tiết
+    window.location.href = detailUrl;
+
+    confirmDialog.style.display = 'none';
+  });
+</script>
+<script type="text/javascript">
+  if (document.location.hostname == 'pratikborsadiya.in') {
+    (function (i, s, o, g, r, a, m) {
+      i['GoogleAnalyticsObject'] = r;
+      i[r] = i[r] || function () {
+        (i[r].q = i[r].q || []).push(arguments)
+      }, i[r].l = 1 * new Date();
+      a = s.createElement(o),
+              m = s.getElementsByTagName(o)[0];
+      a.async = 1;
+      a.src = g;
+      m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+    ga('create', 'UA-72504830-1', 'auto');
+    ga('send', 'pageview');
+  }
+
+
+
+</script>
+
+</body>
+</html>

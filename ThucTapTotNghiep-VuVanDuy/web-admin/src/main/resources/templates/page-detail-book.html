@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org/">
+<head th:insert="fragments/fragments.html :: head"></head>
+<body class="app sidebar-mini">
+<!-- Navbar-->
+<header th:insert="fragments/fragments.html :: header"></header>
+<!-- Sidebar menu-->
+<div class="app-sidebar__overlay" data-toggle="sidebar"></div>
+<aside th:insert="fragments/fragments.html :: sidebar(pageType='', user=${user})"></aside>
+<main class="app-content">
+  <div class="app-title">
+    <div>
+      <h1><i class="bi bi-table"></i> Trang chi tiết</h1>
+      <p>Trường Đại Học Phú Yên</p>
+    </div>
+
+    <ul class="app-breadcrumb breadcrumb side">
+      <li class="breadcrumb-item"><i class="bi bi-house-door fs-6"></i></li>
+      <!--      <li class="breadcrumb-item">Tables</li>-->
+      <li class="breadcrumb-item active"><a href="#" th:text="${param.id == null ? 'Kho/ Thêm' : 'Thông tin/ Chi tiết'}">Thông tin/ Chi tiết</a></li>
+    </ul>
+  </div>
+  <!--  <div class="col-md-6">-->
+  <!--    <div class="tile">-->
+  <!--      <div class="tile-title-w-btn">-->
+  <!--          <h3 class="title">All Items</h3>-->
+  <div class="row">
+    <div class="col-md-6">
+      <div class="tile">
+        <h3 class="tile-title">Thông tin chi tiết</h3>
+        <div class="tile-body">
+          <form class="login-form" th:action="@{/admin/addAndUpdateBook(id=${param.id == null ? null : param.id})}" method="post" enctype="multipart/form-data">
+            <div class="mb-3">
+              <label class="form-label">Tiêu đề sách</label>
+              <input class="form-control" th:name="title" type="text" placeholder="Enter title" th:value="${book.title}">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Tác giả</label>
+              <input class="form-control" type="text" th:name="author" placeholder="Enter author" th:value="${book.author}">
+            </div>
+            <div class="mb-3">
+              <label class="form-label" for="exampleSelect1">Thể loại</label>
+              <select class="form-control" id="exampleSelect1" th:name="${book.category}">
+                <option value="">--Chọn danh mục--</option>
+                <option th:each="category : ${categories}"
+                        th:value="${category.id}"
+                        th:text="${category.name}"
+                        th:selected="${category.id == book.category}">
+                </option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Mô tả</label>
+              <textarea class="form-control" rows="4" type="text" th:name="description" placeholder="Enter description" th:text="${book.description}"></textarea >
+            </div>
+            <div class="mb-3" th:if="${param.id == null}">
+              <label class="form-label">Số lượng</label>
+              <input class="form-control" min="0" type="number" th:name="quantity"  placeholder="Enter quantity">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Hình ảnh</label>
+              <input id="imageInput" class="form-control" type="file" th:name="image">
+            </div>
+            <div class="tile-footer">
+              <button class="btn btn-primary" type="submit"><i class="bi bi-check-circle-fill me-2"></i>Save
+              </button>
+              <a class="btn btn-secondary" th:if="${param.id != null}" th:href="@{/admin/book}"><i
+                      class="bi bi-x-circle-fill me-2"></i>Cancel</a>
+              <a class="btn btn-secondary" th:if="${param.id == null}" th:href="@{/admin/inventory}"><i
+                      class="bi bi-x-circle-fill me-2"></i>Cancel</a>
+            </div>
+          </form>
+        </div>
+
+      </div>
+
+
+    </div>
+<!--    <div class="info"><img class="user-img" src="https://randomuser.me/api/portraits/men/1.jpg" width="195" height="300">-->
+<!--      <h4>John Doe</h4>-->
+<!--      <p>FrontEnd Developer</p>-->
+<!--    </div>-->
+
+    <div class="col-md-6">
+      <img id="previewImage" th:src="${book.images}" alt="Hình ảnh" width="400" height="500">
+      <h4>John Doe</h4>
+      <p>FrontEnd Developer</p>
+    </div>
+  </div>
+
+
+</main>
+<script src="/js/jquery-3.7.0.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/main.js"></script>
+<!-- Page specific javascripts-->
+<link rel="stylesheet" href="https://cdn.datatables.net/v/bs5/dt-1.13.4/datatables.min.css">
+<!-- Data table plugin-->
+<script type="text/javascript" src="/js/plugins/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/js/plugins/dataTables.bootstrap.min.js"></script>
+<script type="text/javascript">$('#sampleTable').DataTable();</script>
+<!-- Google analytics script-->
+<!--<script type="text/javascript">-->
+<!--  if (document.location.hostname == 'pratikborsadiya.in') {-->
+<!--    (function (i, s, o, g, r, a, m) {-->
+<!--      i['GoogleAnalyticsObject'] = r;-->
+<!--      i[r] = i[r] || function () {-->
+<!--        (i[r].q = i[r].q || []).push(arguments)-->
+<!--      }, i[r].l = 1 * new Date();-->
+<!--      a = s.createElement(o),-->
+<!--              m = s.getElementsByTagName(o)[0];-->
+<!--      a.async = 1;-->
+<!--      a.src = g;-->
+<!--      m.parentNode.insertBefore(a, m)-->
+<!--    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');-->
+<!--    ga('create', 'UA-72504830-1', 'auto');-->
+<!--    ga('send', 'pageview');-->
+<!--  }-->
+<!--</script>-->
+<script>
+  document.getElementById("imageInput").onchange = function(event) {
+    var reader = new FileReader();
+    reader.onload = function() {
+      document.getElementById("previewImage").src = reader.result;
+    };
+    reader.readAsDataURL(event.target.files[0]);
+  };
+</script>
+</body>
+</html>

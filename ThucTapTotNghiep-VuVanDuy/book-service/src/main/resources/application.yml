@@ -1,0 +1,12 @@
+inventory-service:
+  url: http://localhost:9003
+openapi:
+  service:
+    title: book-service doc # title that you will want to display in the Swagger UI
+    version: 1.0.0
+    url: http://localhost:9001
+springdoc:
+  api-docs:
+    path: /book/v3/api-docs
+  swagger-ui:
+    path: /book/swagger-ui.html

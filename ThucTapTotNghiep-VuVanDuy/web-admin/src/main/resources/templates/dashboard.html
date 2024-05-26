@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org/">
+<head th:insert="fragments/fragments.html :: head"></head>
+<body class="app sidebar-mini">
+<!-- Navbar-->
+<header th:insert="fragments/fragments.html :: header"></header>
+<!-- Sidebar menu-->
+<div class="app-sidebar__overlay" data-toggle="sidebar"></div>
+<aside th:insert="fragments/fragments.html :: sidebar(pageType='dashboard',user=${user})"></aside>
+<main class="app-content">
+    <div class="app-title">
+        <div>
+            <h1><i class="bi bi-speedometer"></i> Dashboard</h1>
+            <p>Trường Đại Học Phú Yên</p>
+        </div>
+        <ul class="app-breadcrumb breadcrumb">
+            <li class="breadcrumb-item"><i class="bi bi-house-door fs-6"></i></li>
+            <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+        </ul>
+    </div>
+    <div class="row">
+        <div class="col-md-8 col-lg-3">
+            <div class="widget-small primary coloured-icon"><i class="icon bi bi-people fs-1"></i>
+                <div class="info">
+                    <h4>Tổng</h4>
+                    <p><b th:text="${dataTotalChart[0] + dataTotalChart[1] + dataTotalChart[2] + dataTotalChart[3]}"></b></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8 col-lg-3">
+            <div class="widget-small info coloured-icon"><i class="icon bi bi-heart fs-1"></i>
+                <div class="info">
+                    <h4>Đang mượn</h4>
+                    <p><b th:text="${dataTotalChart[0]}"></b></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8 col-lg-3">
+            <div class="widget-small warning coloured-icon"><i class="icon bi bi-folder2 fs-1"></i>
+                <div class="info">
+                    <h4>Đã trả</h4>
+                    <p><b th:text="${dataTotalChart[1]}"></b></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8 col-lg-3">
+            <div class="widget-small danger coloured-icon"><i class="icon bi bi-star fs-1"></i>
+                <div class="info">
+                    <h4>Chờ duyệt</h4>
+                    <p><b th:text="${dataTotalChart[2]}"></b></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8 col-lg-3">
+            <div class="widget-small info coloured-icon"><i class="icon bi bi-heart fs-1"></i>
+                <div class="info">
+                    <h4>Đã hủy</h4>
+                    <p><b th:text="${dataTotalChart[3]}"></b></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="tile">
+                <h3 class="tile-title">Thống kê trong tuần trước</h3>
+                <div class="ratio ratio-16x9">
+                    <div id="salesChart"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="tile">
+                <h3 class="tile-title">Thống kê tất cả</h3>
+                <div class="ratio ratio-16x9">
+                    <div id="supportRequestChart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<script src="/js/jquery-3.7.0.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/main.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.0.2/echarts.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+<script type="text/javascript">
+    // Sales data
+    const salesData = {
+        xAxis: {
+            type: 'category',
+            data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+        },
+        yAxis: {
+            type: 'value',
+            axisLabel: {
+                formatter: '{value}'
+            }
+        },
+        series: [
+            {
+                data: [[${dataLastWeedChart}]],
+                type: 'line',
+                smooth: true
+            }
+        ],
+        tooltip: {
+            trigger: 'axis',
+            formatter: "<b>{b0}:</b> {c0}"
+        }
+    };
+
+    // Support requests data
+    const supportRequests = {
+        tooltip: {
+            trigger: 'item'
+        },
+        legend: {
+            orient: 'vertical',
+            left: 'left'
+        },
+        series: [
+            {
+                name: 'Trạng thái',
+                type: 'pie',
+                radius: '50%',
+                data: [
+                    {value: [[${dataTotalChart[0]}]], name: 'Đang mượn'},
+                    {value: [[${dataTotalChart[1]}]], name: 'Đã trả'},
+                    {value: [[${dataTotalChart[2]}]], name: 'Chờ duyệt'},
+                    {value: [[${dataTotalChart[3]}]], name: 'Đã hủy'}
+                ],
+                emphasis: {
+                    itemStyle: {
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                }
+            }
+        ]
+    };
+
+    // Initialize sales chart
+    const salesChartElement = document.getElementById('salesChart');
+    const salesChart = echarts.init(salesChartElement, null, {renderer: 'svg'});
+    salesChart.setOption(salesData);
+    new ResizeObserver(() => salesChart.resize()).observe(salesChartElement);
+
+    // Initialize support request chart
+    const supportChartElement = document.getElementById("supportRequestChart");
+    const supportChart = echarts.init(supportChartElement, null, {renderer: 'svg'});
+    supportChart.setOption(supportRequests);
+    new ResizeObserver(() => supportChart.resize()).observe(supportChartElement);
+</script>
+<!--<div th:insert="fragments/fragments.html :: script"></div>-->
+</body>
+</html>

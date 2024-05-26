@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org/">
+<head th:insert="fragments/fragments.html :: head"></head>
+<body class="app sidebar-mini">
+<!-- Navbar-->
+<header th:insert="fragments/fragments.html :: header"></header>
+<!-- Sidebar menu-->
+<div class="app-sidebar__overlay" data-toggle="sidebar"></div>
+<aside th:insert="fragments/fragments.html :: sidebar(pageType='user', user=${user})"></aside>
+<main class="app-content">
+  <div class="app-title">
+    <div>
+      <h1><i class="bi bi-table"></i> Quản lý người dùng</h1>
+      <p>Trường Đại Học Phú Yên</p>
+    </div>
+
+    <ul class="app-breadcrumb breadcrumb side">
+      <li class="breadcrumb-item"><i class="bi bi-house-door fs-6"></i></li>
+      <!--      <li class="breadcrumb-item">Tables</li>-->
+      <li class="breadcrumb-item active"><a href="#">Người dùng</a></li>
+    </ul>
+  </div>
+      <div class="btn-group">
+          <a class="btn btn-primary" th:if="${user.role eq 'SUPER_ADMIN'}" th:href="@{/admin/createNewUser}"><i class="bi bi-plus-square fs-5"></i></a>
+  <!--        <a class="btn btn-primary" href="#"><i class="bi bi-pencil-square fs-5"></i></a>-->
+  <!--        <a class="btn btn-primary" href="#"><i class="bi bi-trash fs-5"></i></a>-->
+      </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="tile">
+        <div class="tile-body">
+          <div class="bs-component">
+            <div class="modal" id="confirmDialog"
+                 style="position: fixed; top: 50%;left: 50%; transform: translate(-50%, -50%);background-color: rgba(0, 0, 0, 0.5); z-index: 9999; display: none; text-align: center;">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Warning</h5>
+                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true"></span></button>
+                  </div>
+                  <div class="modal-body">
+                    <p>Bạn có chắc chắn muốn thay đổi?</p>
+                  </div>
+                  <div class="modal-footer">
+                    <button class="btn btn-primary" id="yesButton" type="button">YES</button>
+                    <button class="btn btn-secondary" id="noButton" type="button" data-bs-dismiss="modal">NO
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="table-responsive">
+
+              <div class="col-md-2">
+                <label class="form-label" for="exampleSelect1">Tình trạng</label>
+                <select class="form-control" id="exampleSelect1">
+                  <option>--Tất cả--</option>
+                  <option>Hoạt động</option>
+                  <option>Bị Khóa</option>
+                </select>
+                <br>
+              </div>
+
+
+            </div>
+
+
+            </div>
+            <table class="table table-hover table-bordered" id="sampleTable">
+              <thead>
+              <tr>
+                <th>ID</th>
+                <th>Avatar</th>
+                <th>Mã người dùng</th>
+                <th>Tên tài khoản</th>
+                <th>Họ và tên</th>
+                <th>Quyền</th>
+                <th>Trạng thái</th>
+                <th>Hành động</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr th:each="_user : ${users}">
+                <td th:text="${_user.id}"></td>
+                <td>
+                  <img class="app-sidebar__user-avatar" th:src="'data:image/jpeg;base64,' + ${_user.images}" alt="User Image">
+                </td>
+                <td th:text="${_user.code}"></td>
+                <td th:text="${_user.username}"></td>
+                <td th:text="${_user.firstName + ' ' + _user.lastName}"></td>
+                <td th:text="${_user.roles}"></td>
+                <td th:if="${_user != null}">
+                  <span th:if="${_user.status != null}" th:text="${_user.status == 0 ? 'ĐÃ XÓA' : (_user.status == 1 ? 'HOẠT ĐỘNG' : 'BỊ KHÓA')}"></span>
+                </td>
+                <td>
+                  <div class="btn-group row-cols-3">
+                    <!--                                        <a class="btn btn-primary" href="#"><i class="bi bi-plus-square fs-5"></i></a>-->
+                    <a class="btn btn-primary" th:href="@{/admin/detailUserBorrow(id=${_user.id})}">
+                      <i class="bi bi-pencil-square fs-5"></i>
+                    </a>
+
+<!--                    <a class="btn btn-danger" th:style="${(user.role != 'SUPER_ADMIN' || user.username == _user.username) ? 'pointer-events: none; opacity: 0.5;' : ''}" th:disabled="${(user.role != 'SUPER_ADMIN' || user.username == _user.username)}" th:data-id="${_user.id}" id="deleteButton"><i class="bi bi-trash fs-5"></i></a>-->
+
+                    <a class="btn btn-dark" th:if="${_user.status==1}" th:style="${(user.role != 'SUPER_ADMIN' || user.username == _user.username) ? 'pointer-events: none; opacity: 0.5;' : ''}" th:disabled="${(user.role != 'SUPER_ADMIN' || user.username == _user.username)}" th:data-id="${_user.id}" id="lockButton"><i class="bi bi-file-earmark-lock fs-5"></i></a>
+                    <a class="btn btn-info" th:if="${_user.status==-1}" th:style="${(user.role != 'SUPER_ADMIN' || user.username == _user.username) ? 'pointer-events: none; opacity: 0.5;' : ''}" th:disabled="${(user.role != 'SUPER_ADMIN' || user.username == _user.username)}" th:data-id="${_user.id}" id="activeButton"><i class="bi bi-check-square fs-5"></i></a>
+
+                  </div>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+<script src="/js/jquery-3.7.0.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/main.js"></script>
+<!-- Page specific javascripts-->
+<link rel="stylesheet" href="https://cdn.datatables.net/v/bs5/dt-1.13.4/datatables.min.css">
+<!-- Data table plugin-->
+<script type="text/javascript" src="/js/plugins/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/js/plugins/dataTables.bootstrap.min.js"></script>
+<script type="text/javascript">$('#sampleTable').DataTable();</script>
+<!-- Google analytics script-->
+
+<script type="text/javascript">
+
+  // Lấy tham chiếu đến modal confirmDialog
+  var confirmDialog = document.getElementById('confirmDialog');
+
+  // Lấy tham chiếu đến các nút trong modal
+  var yesButton = document.getElementById('yesButton');
+  var noButton = document.getElementById('noButton');
+
+  // Lấy tham chiếu đến các nút trong bảng
+  var lockButton = document.querySelectorAll('[id^="lockButton"]');
+  var activeButton = document.querySelectorAll('[id^="activeButton"]');
+  var returnButtons = document.querySelectorAll('[id^="lockButton"]');
+
+  // Sự kiện click cho approveButtons
+  lockButton.forEach(function(button) {
+    button.addEventListener('click', function() {
+      // Lấy id từ thuộc tính data-id của nút
+      var borrowId = button.getAttribute('data-id');
+      // Hiển thị modal
+      confirmDialog.style.display = 'block';
+      // Thiết lập hành động cho nút yesButton
+      yesButton.setAttribute('data-action', 'lock');
+      yesButton.setAttribute('data-id', borrowId);
+    });
+  });
+
+  // Sự kiện click cho deleteButtons
+  activeButton.forEach(function(button) {
+    button.addEventListener('click', function() {
+      // Lấy id từ thuộc tính data-id của nút
+      var borrowId = button.getAttribute('data-id');
+      // Hiển thị modal
+      confirmDialog.style.display = 'block';
+      // Thiết lập hành động cho nút yesButton
+      yesButton.setAttribute('data-action', 'active');
+      yesButton.setAttribute('data-id', borrowId);
+    });
+  });
+
+  // Sự kiện click cho nút yesButton trong modal
+  yesButton.addEventListener('click', function() {
+    // Lấy hành động từ thuộc tính data-action của nút
+    var action = yesButton.getAttribute('data-action');
+    // Lấy id từ thuộc tính data-id của nút
+    var borrowId = yesButton.getAttribute('data-id');
+    // Xác định đường dẫn dựa trên hành động
+    var detailUrl = "";
+    if (action === 'lock') {
+      detailUrl = "/admin/updateStatusUser?id=" + borrowId + "&action=lock";
+    } else if (action === 'active') {
+      detailUrl = "/admin/updateStatusUser?id=" + borrowId + "&action=active";
+    }
+    // Chuyển hướng đến đường dẫn tương ứng
+    window.location.href = detailUrl;
+    // Ẩn modal
+    confirmDialog.style.display = 'none';
+  });
+
+  // Sự kiện click cho nút noButton trong modal
+  noButton.addEventListener('click', function() {
+    // Ẩn modal
+    confirmDialog.style.display = 'none';
+  });
+
+  // Sự kiện click cho returnButtons (nút "Đã trả")
+  returnButtons.forEach(function(button) {
+    button.addEventListener('click', function() {
+      // Thực hiện các thao tác khi click vào nút "Đã trả" nếu cần
+      // Ví dụ: alert("Bạn đã chọn nút Đã trả");
+    });
+  });
+
+
+
+</script>
+<script type="text/javascript">
+  if (document.location.hostname == 'pratikborsadiya.in') {
+    (function (i, s, o, g, r, a, m) {
+      i['GoogleAnalyticsObject'] = r;
+      i[r] = i[r] || function () {
+        (i[r].q = i[r].q || []).push(arguments)
+      }, i[r].l = 1 * new Date();
+      a = s.createElement(o),
+              m = s.getElementsByTagName(o)[0];
+      a.async = 1;
+      a.src = g;
+      m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+    ga('create', 'UA-72504830-1', 'auto');
+    ga('send', 'pageview');
+  }
+
+
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,55 @@
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: book-service
+          uri: lb://book-service
+          predicates:
+            - Path= /api/v1/book-service/**, /book/v3/api-docs
+          filters:
+            - AuthenticationFilter
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path= /api/v1/user-service/** , /user/v3/api-docs
+          filters:
+            - AuthenticationFilter
+        - id: inventory-service
+          uri: lb://inventory-service
+          predicates:
+            - Path= /api/v1/inventory-service/** , /inventory/v3/api-docs
+          filters:
+            - AuthenticationFilter
+        - id: borrow-service
+          uri: lb://borrow-service
+          predicates:
+            - Path= /api/v1/borrow-service/** , /borrow/v3/api-docs
+          filters:
+            - AuthenticationFilter
+
+application:
+  security:
+    jwt:
+      secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+      expiration: 86400000 # a day
+      refresh-token:
+        expiration: 604800000 # 7 days
+
+springdoc:
+  enable-native-support: true
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    config-url: /v3/api-docs/swagger-config
+    urls:
+      - url: /book/v3/api-docs
+        name: Book Service
+      - url: /user/v3/api-docs
+        name: User Service
+      - url: /inventory/v3/api-docs
+        name: Inventory Service
+      - url: /borrow/v3/api-docs
+        name: Borrow Service
+

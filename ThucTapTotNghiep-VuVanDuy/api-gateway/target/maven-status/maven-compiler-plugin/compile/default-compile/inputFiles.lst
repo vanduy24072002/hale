@@ -1,0 +1,11 @@
+D:\sofware\ThucTapTotNghiep-VuVanDuy\api-gateway\src\main\java\com\imtTranding\ApiGateway\config\RouterValidator.java
+D:\sofware\ThucTapTotNghiep-VuVanDuy\api-gateway\src\main\java\com\imtTranding\ApiGateway\repository\AdminRepository.java
+D:\sofware\ThucTapTotNghiep-VuVanDuy\api-gateway\src\main\java\com\imtTranding\ApiGateway\ApiGatewayApplication.java
+D:\sofware\ThucTapTotNghiep-VuVanDuy\api-gateway\src\main\java\com\imtTranding\ApiGateway\dto\AdminDTO.java
+D:\sofware\ThucTapTotNghiep-VuVanDuy\api-gateway\src\main\java\com\imtTranding\ApiGateway\service\ApiGatewayService.java
+D:\sofware\ThucTapTotNghiep-VuVanDuy\api-gateway\src\main\java\com\imtTranding\ApiGateway\exception\ErrorAuth.java
+D:\sofware\ThucTapTotNghiep-VuVanDuy\api-gateway\src\main\java\com\imtTranding\ApiGateway\config\AuthenticationFilter.java
+D:\sofware\ThucTapTotNghiep-VuVanDuy\api-gateway\src\main\java\com\imtTranding\ApiGateway\service\JwtService.java
+D:\sofware\ThucTapTotNghiep-VuVanDuy\api-gateway\src\main\java\com\imtTranding\ApiGateway\dto\Role.java
+D:\sofware\ThucTapTotNghiep-VuVanDuy\api-gateway\src\main\java\com\imtTranding\ApiGateway\config\ApplocationConfig.java
+D:\sofware\ThucTapTotNghiep-VuVanDuy\api-gateway\src\main\java\com\imtTranding\ApiGateway\controller\ApigatewayController.java

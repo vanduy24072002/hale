@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org/">
+<head th:insert="fragments/fragments.html :: head"></head>
+<body class="app sidebar-mini">
+<!-- Navbar-->
+<header th:insert="fragments/fragments.html :: header"></header>
+<!-- Sidebar menu-->
+<div class="app-sidebar__overlay" data-toggle="sidebar"></div>
+<aside th:insert="fragments/fragments.html :: sidebar(pageType='user', user=${user})"></aside>
+<main class="app-content">
+  <div class="app-title">
+    <div>
+      <h1><i class="bi bi-table"></i> Trang chi tiết</h1>
+      <p>Trường Đại Học Phú Yên</p>
+    </div>
+
+    <ul class="app-breadcrumb breadcrumb side">
+      <li class="breadcrumb-item"><i class="bi bi-house-door fs-6"></i></li>
+      <!--      <li class="breadcrumb-item">Tables</li>-->
+      <li class="breadcrumb-item active"><a href="#">Người dùng/ Chi tiết</a></li>
+    </ul>
+  </div>
+  <!--  <div class="col-md-6">-->
+  <!--    <div class="tile">-->
+  <!--      <div class="tile-title-w-btn">-->
+  <!--          <h3 class="title">All Items</h3>-->
+  <div class="row user">
+    <div class="col-md-3">
+      <div class="tile p-0">
+        <ul class="nav flex-column nav-tabs user-tabs">
+          <li class="nav-item"><a class="nav-link active" href="#user-timeline"
+                                  data-bs-toggle="tab">Thông tin</a></li>
+          <li class="nav-item"><a class="nav-link" href="#user-settings" data-bs-toggle="tab">Mượn sách</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="col-md-9">
+      <div class="tab-content">
+        <div class="tab-pane active" id="user-timeline">
+          <div class="tile user-settings">
+            <h4 class="line-head">Thông tin người dùng</h4>
+            <form th:action="@{/admin/updateInfoUser(id=${_user.id == null ? null : _user.id}, action=false)}" method="post" enctype="multipart/form-data">
+              <div class="profile row mb-4">
+                <img id="userImage" class="user-img col-md-4" height="250" th:src="'data:image/jpeg;base64,' + ${_user.images}">
+
+              </div>
+              <div class="row mb-4">
+                <div class="col-md-4">
+                  <label>First Name</label>
+                  <input class="form-control" type="text" th:name="firstName" th:value="${_user.firstName}" th:disabled="${user.role != 'SUPER_ADMIN'}">
+                </div>
+                <div class="col-md-4">
+                  <label>Last Name</label>
+                  <input class="form-control" type="text" th:name="lastName" th:value="${_user.lastName}" th:disabled="${user.role != 'SUPER_ADMIN'}">
+                </div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Hình ảnh</label>
+                <input id="imageInput" class="form-control" type="file" th:name="image" th:disabled="${user.role != 'SUPER_ADMIN'}">
+              </div>
+              <div class="tile-footer">
+                <button class="btn btn-primary"  th:disabled="${user.role != 'SUPER_ADMIN'}" type="submit"><i class="bi bi-check-circle-fill me-2"></i>Save
+                </button>
+                <a class="btn btn-secondary" th:href="@{/admin/user}"><i
+                        class="bi bi-x-circle-fill me-2"></i>Back</a>
+              </div>
+
+            </form>
+          </div>
+        </div>
+        <div class="tab-pane fade" id="user-settings">
+          <div class="tile user-settings">
+            <h4 class="line-head">Lịch sử mượn sách</h4>
+            <div class="table-responsive">
+              <table class="table table-hover table-bordered" id="sampleTable">
+                <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Mã mượn sách</th>
+                  <th>Tên sách</th>
+                  <th>Mã sách</th>
+                  <th>Số lượng</th>
+                  <th>Số ngày mượn</th>
+                  <th>Ngày mượn</th>
+                  <th>Trạng thái</th>
+<!--                  <th>Hành động</th>-->
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="borrow : ${borrows}">
+                  <td th:text="${borrow.id}"></td>
+                  <td th:text="${borrow.orderBookNumber}"></td>
+                  <td th:text="${borrow.title}"></td>
+                  <td th:text="${borrow.codeBook}"></td>
+                  <td th:text="${borrow.numberDayBorrow}"></td>
+                  <td th:text="${borrow.quantity}"></td>
+                  <td th:text="${borrow.borrowDate}"></td>
+                  <td th:if="${borrow != null}">
+                    <span th:if="${borrow.status != null}" th:text="${borrow.status == 0 ? 'Đã trả' : (borrow.status == 1 ? 'Đang mượn' : 'Chờ duyệt')}"></span>
+                  </td>
+<!--                  <td>-->
+<!--                    <div class="btn-group row-cols-3">-->
+<!--                      &lt;!&ndash;                                        <a class="btn btn-primary" href="#"><i class="bi bi-plus-square fs-5"></i></a>&ndash;&gt;-->
+<!--                      <a class="btn btn-primary" th:href="@{/admin/detailUserBorrow(id=${_user.id})}">-->
+<!--                        <i class="bi bi-pencil-square fs-5"></i>-->
+<!--                      </a>-->
+
+<!--                      <a class="btn btn-danger" th:if="${user.role eq 'SUPER_ADMIN'}" th:data-id="${_user.id}" id="deleteButton"><i class="bi bi-trash fs-5"></i></a>-->
+<!--                      <a class="btn btn-dark" th:if="${user.role eq 'SUPER_ADMIN'}" th:data-id="${_user.id}" id="deleteButton"><i class="bi bi-file-earmark-lock fs-5"></i></a>-->
+<!--                    </div>-->
+<!--                  </td>-->
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="tile-footer">
+            <a class="btn btn-secondary" th:href="@{/admin/user}"><i
+                    class="bi bi-x-circle-fill me-2"></i>Back</a>
+          </div>
+<!--          <div class="row mb-10">-->
+<!--            <div class="col-md-12">-->
+<!--              <button class="btn btn-primary" type="submit"><i-->
+<!--                      class="bi bi-check-circle-fill me-2" ></i> Save-->
+<!--              </button>-->
+<!--            </div>-->
+<!--          </div>-->
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+</main>
+<script src="/js/jquery-3.7.0.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/main.js"></script>
+<!-- Page specific javascripts-->
+<link rel="stylesheet" href="https://cdn.datatables.net/v/bs5/dt-1.13.4/datatables.min.css">
+<!-- Data table plugin-->
+<script type="text/javascript" src="/js/plugins/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/js/plugins/dataTables.bootstrap.min.js"></script>
+<script type="text/javascript">$('#sampleTable').DataTable();</script>
+<!-- Google analytics script-->
+<!--<script type="text/javascript">-->
+<!--  if (document.location.hostname == 'pratikborsadiya.in') {-->
+<!--    (function (i, s, o, g, r, a, m) {-->
+<!--      i['GoogleAnalyticsObject'] = r;-->
+<!--      i[r] = i[r] || function () {-->
+<!--        (i[r].q = i[r].q || []).push(arguments)-->
+<!--      }, i[r].l = 1 * new Date();-->
+<!--      a = s.createElement(o),-->
+<!--              m = s.getElementsByTagName(o)[0];-->
+<!--      a.async = 1;-->
+<!--      a.src = g;-->
+<!--      m.parentNode.insertBefore(a, m)-->
+<!--    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');-->
+<!--    ga('create', 'UA-72504830-1', 'auto');-->
+<!--    ga('send', 'pageview');-->
+<!--  }-->
+<!--</script>-->
+<script>
+  // Lấy tham chiếu đến input file và thẻ img
+  var imageInput = document.getElementById('imageInput');
+  var userImage = document.getElementById('userImage');
+
+  // Thêm sự kiện onchange vào input file
+  imageInput.addEventListener('change', function(event) {
+    // Kiểm tra xem người dùng đã chọn một tệp hay chưa
+    if (event.target.files && event.target.files[0]) {
+      // Đọc tệp hình ảnh được chọn
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        // Thay đổi giá trị của thuộc tính src của thẻ img để hiển thị ảnh mới
+        userImage.src = e.target.result;
+      }
+      // Đọc tệp hình ảnh
+      reader.readAsDataURL(event.target.files[0]);
+    }
+  });
+</script>
+
+</body>
+</html>

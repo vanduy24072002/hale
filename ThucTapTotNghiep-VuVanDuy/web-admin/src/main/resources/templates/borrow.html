@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org/">
+<head th:insert="fragments/fragments.html :: head">
+
+
+</head>
+<body class="app sidebar-mini">
+<!-- Navbar-->
+<header th:insert="fragments/fragments.html :: header"></header>
+<!-- Sidebar menu-->
+<div class="app-sidebar__overlay" data-toggle="sidebar"></div>
+<aside th:insert="fragments/fragments.html :: sidebar(pageType='borrow', user=${user})"></aside>
+<main class="app-content">
+    <div class="app-title">
+        <div>
+            <h1><i class="bi bi-table"></i> Quản lý mượn/trả sách</h1>
+            <p>Trường Đại Học Phú Yên</p>
+        </div>
+
+        <ul class="app-breadcrumb breadcrumb side">
+            <li class="breadcrumb-item"><i class="bi bi-house-door fs-6"></i></li>
+            <!--      <li class="breadcrumb-item">Tables</li>-->
+            <li class="breadcrumb-item active"><a href="#">Mượn/trả</a></li>
+        </ul>
+    </div>
+    <!--  <div class="col-md-6">-->
+    <!--    <div class="tile">-->
+    <!--      <div class="tile-title-w-btn">-->
+    <!--          <h3 class="title">All Items</h3>-->
+    <!--    <div class="btn-group">-->
+    <!--        <a class="btn btn-primary" th:href="@{/admin/detail}"><i class="bi bi-plus-square fs-5"></i></a>-->
+    <!--&lt;!&ndash;        <a class="btn btn-primary" href="#"><i class="bi bi-pencil-square fs-5"></i></a>&ndash;&gt;-->
+    <!--&lt;!&ndash;        <a class="btn btn-primary" href="#"><i class="bi bi-trash fs-5"></i></a>&ndash;&gt;-->
+    <!--    </div>-->
+    <!--      </div>-->
+    <!--        <div class="tile-body">-->
+    <!--          <b>Card with button group </b><br>-->
+    <!--          Hey there, I am a very simple card. I am good at containing small bits of information. I am quite convenient because I require little markup to use effectively.-->
+
+    <!--        </div>-->
+    <!--    </div>-->
+    <!--  </div>-->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="tile">
+                <div class="tile-body">
+                    <div class="bs-component">
+                        <div class="modal" id="confirmDialog"
+                             style="position: fixed; top: 50%;left: 50%; transform: translate(-50%, -50%);background-color: rgba(0, 0, 0, 0.5); z-index: 9999; display: none; text-align: center;">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Warning</h5>
+                                        <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true"></span></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>Bạn có chắc chắn muốn thay đổi?</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button class="btn btn-primary" id="yesButton" type="button">YES</button>
+                                        <button class="btn btn-secondary" id="noButton" type="button" data-bs-dismiss="modal">NO
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <div class="container">
+                            <button id="toggle-button" onclick="toggleFields()">▼</button>
+                            <div id="fields-container" class="hidden">
+                                <div class="mb-3">
+                                    <div class="row mb-5">
+                                        <div class="col-md-4">
+                                            <label for="start-date">Từ ngày:</label>
+                                            <input class="form-control" type="date" id="start-date" name="start-date">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="end-date">Đến ngày:</label>
+                                            <input class="form-control" type="date" id="end-date" name="end-date">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="status">Tình trạng</label>
+                                            <select class="form-control" id="status">
+                                                <option value="null">--Tất cả--</option>
+                                                <option value="-2">Chờ duyệt</option>
+                                                <option value="1">Đang mượn</option>
+                                                <option value="0">Đã trả</option>
+                                                <option value="-3">Đã hủy</option>
+                                            </select>
+                                        </div>
+
+                                    <div class="col-md-5" style="margin-top: 10px;">
+                                        <button class="btn btn-primary" onclick="submitDates()">Lọc</button>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <table class="table table-hover table-bordered" id="sampleTable">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Mã mượn sách</th>
+                                <th>Số ngày mượn</th>
+                                <th>Người mượn</th>
+                                <th>Mã sách</th>
+                                <th>Số lượng</th>
+                                <th>Tên sách</th>
+                                <th>Ngày mượn</th>
+                                <th>Trạng thái</th>
+                                <th>Hành động</th>
+                                <th>Hủy</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="borrow : ${borrows}">
+                                <td th:text="${borrow.id}"></td>
+                                <td th:text="${borrow.orderBookNumber}"></td>
+                                <td th:text="${borrow.numberDayBorrow}"></td>
+                                <td th:text="${borrow.firstName + ' ' + borrow.lastName}"></td>
+<!--                                <td>-->
+<!--                                    <img th:src="'data:image/jpeg;base64,' + ${borrow.images}" alt="Hình ảnh" width="65" height="100">-->
+<!--                                </td>-->
+                                <td th:text="${borrow.codeBook}"></td>
+                                <td th:text="${borrow.quantity}"></td>
+                                <td th:text="${borrow.title}"></td>
+                                <td th:text="${borrow.borrowDate}"></td>
+                                <td th:if="${borrow != null}">
+                                    <span th:if="${borrow.status != null}" th:text="${borrow.status == 0 ? 'Đã trả' : (borrow.status == 1 ? 'Đang mượn' : (borrow.status == -2 ?'Chờ duyệt' : 'Đã hủy'))}"></span>
+                                </td>
+                                <td th:if="${borrow != null}">
+                                    <div class="btn-group row-cols-3">
+                                        <button class="btn btn-info" th:data-action="approve" th:data-id="${borrow.id}" id="approveButton" type="button" th:if="${borrow.status == -2}">Duyệt</button>
+                                        <button class="btn btn-primary" th:data-action="delete" th:data-id="${borrow.id}" id="deleteButton" type="button" th:if="${borrow.status == 1}">Trả sách</button>
+                                        <button class="btn btn-secondary" id="returnButton" type="button" disabled="disabled" th:if="${borrow.status == 0}">Đã trả</button>
+<!--                                        <button class="btn btn-danger" type="button">Hủy</button>-->
+                                    </div>
+                                </td>
+                                <td th:if="${borrow != null}">
+                                    <div class="btn-group row-cols-3">
+                                        <button class="btn btn-danger" th:if="${borrow.status == -2}" type="button" th:data-action="cancel" th:data-id="${borrow.id}" id="cancelButton">Hủy</button>
+                                        <button class="btn btn-danger" disabled="disabled" th:if="${borrow.status != -2}" type="button">Hủy</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<script src="/js/jquery-3.7.0.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/main.js"></script>
+<!-- Page specific javascripts-->
+<link rel="stylesheet" href="https://cdn.datatables.net/v/bs5/dt-1.13.4/datatables.min.css">
+<!-- Data table plugin-->
+<script type="text/javascript" src="/js/plugins/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/js/plugins/dataTables.bootstrap.min.js"></script>
+<script type="text/javascript">$('#sampleTable').DataTable();</script>
+<!-- Google analytics script-->
+<script>
+    function toggleFields() {
+        const fieldsContainer = document.getElementById('fields-container');
+        const toggleButton = document.getElementById('toggle-button');
+
+
+        if (fieldsContainer.style.display === 'none') {
+            fieldsContainer.style.display = 'block';
+            toggleButton.innerHTML = '▲';
+        } else {
+            fieldsContainer.style.display = 'none';
+            toggleButton.innerHTML = '▼';
+        }
+    }
+
+    function submitDates() {
+        const startDate = document.getElementById('start-date').value;
+        const endDate = document.getElementById('end-date').value;
+        const status = document.getElementById('status').value;
+
+        // if (!startDate || !endDate) {
+        //     alert('Vui lòng chọn cả hai ngày.');
+        //     return;
+        // }
+
+        if (new Date(startDate) > new Date(endDate)) {
+            alert('Ngày bắt đầu phải trước ngày kết thúc.');
+            return;
+        }
+
+        // Encode parameters before appending to URL
+
+        const encodedStatus = encodeURIComponent(status);
+        const encodedStartDate = encodeURIComponent(startDate);
+        const encodedEndDate = encodeURIComponent(endDate);
+
+        var url = `/admin/findByFilter?status=${encodedStatus}&fromDate=${encodedStartDate}&toDate=${encodedEndDate}`;
+        window.location.href = url;
+        // alert(`Bạn đã chọn từ ngày ${startDate} đến ngày ${endDate}`);
+    }
+</script>
+
+<script type="text/javascript">
+
+        // Lấy tham chiếu đến modal confirmDialog
+        var confirmDialog = document.getElementById('confirmDialog');
+
+        // Lấy tham chiếu đến các nút trong modal
+        var yesButton = document.getElementById('yesButton');
+        var noButton = document.getElementById('noButton');
+
+        // Lấy tham chiếu đến các nút trong bảng
+        var approveButtons = document.querySelectorAll('[id^="approveButton"]');
+        var deleteButtons = document.querySelectorAll('[id^="deleteButton"]');
+        var returnButtons = document.querySelectorAll('[id^="returnButton"]');
+        var cancelButtons = document.querySelectorAll('[id^="cancelButton"]');
+        // Sự kiện click cho approveButtons
+        approveButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                // Lấy id từ thuộc tính data-id của nút
+                var borrowId = button.getAttribute('data-id');
+                // Hiển thị modal
+                confirmDialog.style.display = 'block';
+                // Thiết lập hành động cho nút yesButton
+                yesButton.setAttribute('data-action', 'approve');
+                yesButton.setAttribute('data-id', borrowId);
+            });
+        });
+        cancelButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                // Lấy id từ thuộc tính data-id của nút
+                var borrowId = button.getAttribute('data-id');
+                // Hiển thị modal
+                confirmDialog.style.display = 'block';
+                // Thiết lập hành động cho nút yesButton
+                yesButton.setAttribute('data-action', 'cancel');
+                yesButton.setAttribute('data-id', borrowId);
+            });
+        });
+
+        // Sự kiện click cho deleteButtons
+        deleteButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                // Lấy id từ thuộc tính data-id của nút
+                var borrowId = button.getAttribute('data-id');
+                // Hiển thị modal
+                confirmDialog.style.display = 'block';
+                // Thiết lập hành động cho nút yesButton
+                yesButton.setAttribute('data-action', 'delete');
+                yesButton.setAttribute('data-id', borrowId);
+            });
+        });
+
+        // Sự kiện click cho nút yesButton trong modal
+        yesButton.addEventListener('click', function() {
+            // Lấy hành động từ thuộc tính data-action của nút
+            var action = yesButton.getAttribute('data-action');
+            // Lấy id từ thuộc tính data-id của nút
+            var borrowId = yesButton.getAttribute('data-id');
+            // Xác định đường dẫn dựa trên hành động
+            var detailUrl = "";
+            if (action === 'approve') {
+                detailUrl = "/admin/approveBorrow?id=" + borrowId;
+            } else if (action === 'delete') {
+                detailUrl = "/admin/deleteBorrow?id=" + borrowId;
+            }else{
+                detailUrl = "/admin/cancelBorrow?id=" + borrowId;
+            }
+            // Chuyển hướng đến đường dẫn tương ứng
+            window.location.href = detailUrl;
+            // Ẩn modal
+            confirmDialog.style.display = 'none';
+        });
+
+        // Sự kiện click cho nút noButton trong modal
+        noButton.addEventListener('click', function() {
+            // Ẩn modal
+            confirmDialog.style.display = 'none';
+        });
+
+        // Sự kiện click cho returnButtons (nút "Đã trả")
+        returnButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                // Thực hiện các thao tác khi click vào nút "Đã trả" nếu cần
+                // Ví dụ: alert("Bạn đã chọn nút Đã trả");
+            });
+        });
+
+
+
+</script>
+<script type="text/javascript">
+    if (document.location.hostname == 'pratikborsadiya.in') {
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r;
+            i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date();
+            a = s.createElement(o),
+                m = s.getElementsByTagName(o)[0];
+            a.async = 1;
+            a.src = g;
+            m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+        ga('create', 'UA-72504830-1', 'auto');
+        ga('send', 'pageview');
+    }
+
+
+
+</script>
+
+</body>
+</html>
