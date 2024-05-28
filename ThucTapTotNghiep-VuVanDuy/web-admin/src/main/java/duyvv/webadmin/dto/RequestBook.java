@@ -15,6 +15,7 @@ public class RequestBook {
     private byte[] images;
     private String author;
     private Long category ;
+    private String position ;
     private Integer quantity ;
     private String categoryName ;
 }

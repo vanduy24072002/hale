@@ -86,7 +86,7 @@ public class WebController {
         String message = webAdminService.addAndUpdateBook(book, file.getBytes(), id);
         if(!message.isEmpty() && id == null){
             System.out.println(message);
-            return "redirect:/admin/inventory";
+            return "redirect:/admin/warehouse";
         }
         if(!message.isEmpty() && id != null){
             System.out.println(message);
@@ -123,13 +123,16 @@ public class WebController {
         return webAdminService.categoryPage(userHolder);
     }
     @GetMapping("/warehouse")
-    public ModelAndView inventoryPage() {
+    public ModelAndView warehousePage(@RequestParam(required = false) Boolean isFilter, @RequestParam(required = false) Integer status, @RequestParam(required = false) LocalDate fromDate, @RequestParam(required = false) LocalDate endDate) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
             return new ModelAndView("login");
         }
-        return webAdminService.inventoryPage(userHolder);
+        if(status == null && fromDate == null && endDate == null){
+            isFilter = false ;
+        }
+        return webAdminService.warehousePage(userHolder, isFilter, (status == null) ? null: status, (fromDate == null) ? null: LocalDateTime.of(fromDate, LocalTime.of(0, 0, 0, 0)) , (endDate == null) ? null : LocalDateTime.of(endDate,LocalTime.of(0, 0, 0, 0)) );
     }
 
     @GetMapping("/detailUserBorrow")

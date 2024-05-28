@@ -5,6 +5,7 @@ import com.imtTranding.BookService.entities.Book;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface BookResponsitory extends JpaRepository<Book, Long> {
@@ -13,4 +14,10 @@ public interface BookResponsitory extends JpaRepository<Book, Long> {
     )
     List<BookResponse> findBookRepositoryAll();
 
+    @Query(value = "SELECT b " +
+            "FROM Book b "+
+            "WHERE 1 = 1 " +
+            "AND b.category.id = :id "
+    )
+    List<Book> findBookByCategory(Long id);
 }

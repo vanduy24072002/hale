@@ -1,11 +1,13 @@
 package duyvv.webadmin.controller;
 
+import duyvv.webadmin.dto.CategoryDTO;
 import duyvv.webadmin.dto.ChangeInfoUser;
 import duyvv.webadmin.dto.ChangePassword;
 import duyvv.webadmin.dto.UserHolder;
 import duyvv.webadmin.service.WebAdminService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -154,11 +156,41 @@ public class HandleController {
         if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
             return  "login";
         }
-
         return "redirect:/admin/borrow?isFilter=true" + ((status==null) ? "" : "&status="+ status) + ((fromDate==null) ? "" : "&fromDate=" + fromDate) +  ((toDate==null) ? "" : "&endDate=" + toDate);
 
 
     }
+    @GetMapping("/findWareHouseByFilter")
+    public String findWareHouseByFilter(@RequestParam(required = false) Integer status, @RequestParam(required = false) LocalDate fromDate, @RequestParam(required = false) LocalDate toDate) {
+
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
+            return  "login";
+        }
+        return "redirect:/admin/warehouse?isFilter=true" + ((status==null) ? "" : "&status="+ status) + ((fromDate==null) ? "" : "&fromDate=" + fromDate) +  ((toDate==null) ? "" : "&endDate=" + toDate);
+
+
+    }
+    @PostMapping(value = "/addOrUpdateCategory", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE + ";charset=UTF-8")
+    public String addOrUpdateCategory(@RequestParam("id") Long id,
+                                      @RequestParam("name") String name,
+                                      @RequestParam("nameShort") String nameShort, Model model) {
+
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
+            return  "login";
+        }
+        CategoryDTO category = new CategoryDTO(id,name,nameShort);
+        String message = webAdminService.addOrUpdateCategory(category);
+        model.addAttribute("message",message);
+        return "redirect:/admin/category";
+
+    }
+
 
 
 

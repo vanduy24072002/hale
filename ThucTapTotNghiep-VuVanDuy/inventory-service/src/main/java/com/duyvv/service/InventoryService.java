@@ -1,9 +1,6 @@
 package com.duyvv.service;
 
-import com.duyvv.dto.AddRequest;
-import com.duyvv.dto.BookResponse;
-import com.duyvv.dto.InventoryDTO;
-import com.duyvv.dto.InventoryResponse;
+import com.duyvv.dto.*;
 import com.duyvv.model.Inventory;
 import com.duyvv.repository.InventoryRepository;
 import com.imtTranding.core.entities.Status;
@@ -31,7 +28,7 @@ public class InventoryService {
         Inventory inventory = inventoryRepository.findByIdBook(bookCode);
         InventoryResponse inventoryResponse =  new InventoryResponse() ;
         inventoryResponse.setIdBook(inventory.getIdBook());
-        inventoryResponse.setInStock(inventory.getQuantity() >= quantity);
+        inventoryResponse.setInStock(inventory.getRemain() >= quantity);
         return inventoryResponse ;
     }
 
@@ -40,13 +37,15 @@ public class InventoryService {
         Inventory inventory = toMapper(inventoryDTO);
         if(inventoryDTO.getIdBook() !=null){
             inventory = inventoryRepository.findInventoryById(inventoryDTO.getIdBook());
+            inventory.setRemain(inventory.getRemain() + inventoryDTO.getQuantity());
             inventory.setQuantity(inventory.getQuantity() + inventoryDTO.getQuantity());
-            inventory.setUpdatedAt(LocalDateTime.now());
+            inventory.setStatus(Status.ACTIVE);
+//            inventory.setUpdatedAt(LocalDateTime.now());
             inventoryRepository.save(inventory);
             String codeBook = bookClient.getBookById(inventoryDTO.getIdBook()).getCodeBook();
             return "Đã nhập thêm " + inventoryDTO.getQuantity()+ " quyển sách với mã sách : " + codeBook;
         }
-        System.out.println(inventoryDTO.getImages());
+//        System.out.println(inventoryDTO.getImages());
         AddRequest addRequest = new AddRequest();
         addRequest.setId(inventoryDTO.getIdBook());
         addRequest.setTitle(inventoryDTO.getTitle());
@@ -56,6 +55,14 @@ public class InventoryService {
         addRequest.setCategory(inventoryDTO.getCategory());
         Long idBook = bookClient.createAndUpdate(addRequest);
         inventory.setIdBook(idBook);
+        inventory.setRemain(inventory.getQuantity());
+        if(inventory.getRemain() == 0){
+            // Đã hết
+            inventory.setStatus(Status.LOCKED);
+
+        }
+        inventory.setPosition(inventory.getPosition());
+        inventory.setBorrowed(0);
 
         inventoryRepository.save(inventory);
         return "Đã nhập mới sách thành công";
@@ -65,20 +72,28 @@ public class InventoryService {
         inventory.setId(inventoryDTO.getId());
         inventory.setQuantity(inventoryDTO.getQuantity());
         inventory.setIdBook(inventoryDTO.getIdBook());
+        inventory.setPosition(inventoryDTO.getPosition());
         return inventory ;
     }
 
     public void borrowingBook(Long idBook, Integer quantity) {
         Inventory inventory = inventoryRepository.findByIdBook(idBook);
-        inventory.setQuantity(inventory.getQuantity() - quantity);
-        inventory.setUpdatedAt(LocalDateTime.now());
+        inventory.setRemain(inventory.getRemain() - quantity);
+        inventory.setBorrowed(inventory.getQuantity() - inventory.getRemain());
+
+        if(inventory.getRemain() == 0){
+            // Đã hết
+            inventory.setStatus(Status.LOCKED);
+
+        }
         inventoryRepository.save(inventory);
     }
 
     public void returningBook(Long idBook, Integer quantity) {
         Inventory inventory = inventoryRepository.findByIdBook(idBook);
-        inventory.setQuantity(inventory.getQuantity() + quantity);
-        inventory.setUpdatedAt(LocalDateTime.now());
+        inventory.setRemain(inventory.getRemain() + quantity);
+        inventory.setBorrowed(inventory.getQuantity() - inventory.getRemain());
+        inventory.setStatus(Status.ACTIVE);
         inventoryRepository.save(inventory);
     }
 
@@ -93,6 +108,9 @@ public class InventoryService {
             inventoryDTO.setStatus(inventory.getStatus().getValue());
             inventoryDTO.setQuantity(inventory.getQuantity());
             inventoryDTO.setImportDate(inventory.getCreatedAt());
+            inventoryDTO.setPosition(inventory.getPosition());
+            inventoryDTO.setRemain(inventory.getRemain());
+            inventoryDTO.setBorrowed(inventory.getBorrowed());
             // Thông tin sách
             BookResponse book = bookClient.getBookById(inventoryDTO.getIdBook());
             inventoryDTO.setCodeBook(book.getCodeBook());
@@ -128,5 +146,37 @@ public class InventoryService {
         inventory.setUpdatedAt(LocalDateTime.now());
         inventoryRepository.save(inventory);
         return "Kích hoạt lại thành công" ;
+    }
+
+    public List<InventoryDTO> findByFilter(Filter filter) {
+        List<Inventory> inventorys = inventoryRepository.findWareHouseByRequest(
+                filter.getFromDate(),
+                filter.getEndDate(),
+                (filter.getStatus()==null) ? null : Status.getStatus(filter.getStatus())
+        );
+        List<InventoryDTO> inventorysDTO = new ArrayList();
+        for(Inventory inventory : inventorys){
+            InventoryDTO inventoryDTO = new InventoryDTO();
+            // Thông tin tồn kho
+            inventoryDTO.setId(inventory.getId());
+            inventoryDTO.setIdBook(inventory.getIdBook());
+            inventoryDTO.setStatus(inventory.getStatus().getValue());
+            inventoryDTO.setQuantity(inventory.getQuantity());
+            inventoryDTO.setImportDate(inventory.getCreatedAt());
+            inventoryDTO.setPosition(inventory.getPosition());
+            inventoryDTO.setRemain(inventory.getRemain());
+            inventoryDTO.setBorrowed(inventory.getBorrowed());
+            // Thông tin sách
+            BookResponse book = bookClient.getBookById(inventoryDTO.getIdBook());
+            inventoryDTO.setCodeBook(book.getCodeBook());
+            inventoryDTO.setTitle(book.getTitle());
+            inventoryDTO.setImages(book.getImages());
+            inventoryDTO.setDescription(book.getDescription());
+            inventoryDTO.setAuthor(book.getAuthor());
+            inventoryDTO.setCategory(book.getCategory());
+            inventoryDTO.setCategoryName(book.getCategoryName());
+            inventorysDTO.add(inventoryDTO);
+        }
+        return inventorysDTO ;
     }
 }

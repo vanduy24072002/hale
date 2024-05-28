@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface CategoryRepository extends JpaRepository<Category, Long> {
+
     @Query(value = "SELECT b " +
             "FROM Category b "+
             "WHERE 1 = 1 " +
@@ -24,7 +25,16 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     @Query(value = "SELECT new com.imtTranding.BookService.dto.CategoryDTO(b.id, b.name, b.status, b.nameShort) " +
             "FROM Category b "+
-            "WHERE 1 = 1 "
+            "WHERE 1 = 1 " +
+            "AND b.status = 1"
     )
     List<CategoryDTO> findCategoryDTOAll();
+
+    @Query(value = "SELECT b " +
+            "FROM Category b "+
+            "WHERE 1 = 1 " +
+            "AND b.name = :name " +
+            "AND b.nameShort = :shortName"
+    )
+    List<Category> findCategoryByName(String name, String shortName);
 }

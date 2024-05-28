@@ -105,7 +105,7 @@
                     <div class="col-md-4">
                       <label for="status">Tình trạng</label>
                       <select class="form-control" id="status">
-                        <option value="1000">--Tất cả--</option>
+                        <option value="null">--Tất cả--</option>
                         <option value="1">Còn sách</option>
                         <option value="-1">Hết sách</option>
                         <option value="0">Đã xóa</option>
@@ -128,6 +128,7 @@
                 <th>Tác giả</th>
                 <th>Mã sách</th>
                 <th>Số lượng</th>
+                <th>Còn lại</th>
                 <th>Ngày nhập</th>
                 <th>Thể loại</th>
                 <th>Trạng thái</th>
@@ -135,34 +136,35 @@
               </tr>
               </thead>
               <tbody>
-              <tr th:each="inventory : ${inventorys}">
-                <td th:text="${inventory.id}"></td>
+              <tr th:each="warehouse : ${warehouses}">
+                <td th:text="${warehouse.id}"></td>
                 <td>
-                  <img  width="75" height="100" th:src="'data:image/jpeg;base64,' + ${inventory.images}" alt="User Image">
+                  <img  width="75" height="100" th:src="'data:image/jpeg;base64,' + ${warehouse.images}" alt="User Image">
                 </td>
-                <td th:text="${inventory.title}"></td>
-                <td th:text="${inventory.author}"></td>
-                <td th:text="${inventory.codeBook}"></td>
+                <td th:text="${warehouse.title}"></td>
+                <td th:text="${warehouse.author}"></td>
+                <td th:text="${warehouse.codeBook}"></td>
 
-                <td th:text="${inventory.quantity}"></td>
-                <td th:text="${inventory.importDate}"></td>
-                <td th:text="${inventory.categoryName}"></td>
-                <td th:if="${inventory != null}">
-                  <span th:if="${inventory.status != null}" th:text="${inventory.status == 0 ? 'Đã xóa' : (inventory.status == 1 ? 'Còn' : 'Đã hết')}"></span>
+                <td th:text="${warehouse.quantity}"></td>
+                <td th:text="${warehouse.remain}"></td>
+                <td th:text="${warehouse.importDate}"></td>
+                <td th:text="${warehouse.categoryName}"></td>
+                <td th:if="${warehouse != null}">
+                  <span th:if="${warehouse.status != null}" th:text="${warehouse.status == 0 ? 'Đã xóa' : (warehouse.status == 1 ? 'Còn' : 'Đã hết')}"></span>
                 </td>
                 <td>
                   <div class="btn-group row-cols-3">
                     <!--                                        <a class="btn btn-primary" href="#"><i class="bi bi-plus-square fs-5"></i></a>-->
-                    <button class="btn btn-success addButton" th:data-id="${inventory.id}">
+                    <button class="btn btn-success addButton" th:data-id="${warehouse.id}">
                       <i class="bi bi-plus-square fs-5"></i>
                     </button>
 <!--                    <a class="btn btn-warning" th:href="@{/admin/detailInventory(id=${inventory.id})}">-->
 <!--                      <i class="bi bi-pencil-square fs-5"></i>-->
 <!--                    </a>-->
-                    <button th:if="${inventory.status == 1}" class="btn btn-danger deleteButton"  th:data-id="${inventory.id}">
+                    <button th:if="${warehouse.status != 0}" class="btn btn-danger deleteButton"  th:data-id="${warehouse.id}">
                       <i class="bi bi-trash3-fill fs-5"></i>
                     </button>
-                    <button th:if="${inventory.status == 0}" class="btn btn-danger activeButton"  th:data-id="${inventory.id}">
+                    <button th:if="${warehouse.status == 0}" class="btn btn-danger activeButton"  th:data-id="${warehouse.id}">
                       <i class="bi bi-check-square fs-5"></i>
                     </button>
                   </div>
@@ -217,47 +219,19 @@
     }
 
     // Encode parameters before appending to URL
-    const encodedStatus = encodeURIComponent(status);
-    const encodedStartDate = encodeURIComponent(startDate);
-    const encodedEndDate = encodeURIComponent(endDate);
 
-    var url = `/admin/findBy/warehouseFilter?status=${encodedStatus}&fromDate=${encodedStartDate}&toDate=${encodedEndDate}`;
+
+    var encodedStatus = (status == "null") ? "" : encodeURIComponent(status);
+    var encodedStartDate = encodeURIComponent(startDate);
+    var encodedEndDate = encodeURIComponent(endDate);
+
+    var url ='/admin/findWareHouseByFilter?status=' + encodedStatus + '&fromDate='+ encodedStartDate + '&toDate='+ encodedEndDate;
     window.location.href = url;
     // alert(`Bạn đã chọn từ ngày ${startDate} đến ngày ${endDate}`);
   }
 </script>
 
-<script>
-  function toggleFields() {
-    const fieldsContainer = document.getElementById('fields-container');
-    const toggleButton = document.getElementById('toggle-button');
 
-    if (fieldsContainer.style.display === 'none') {
-      fieldsContainer.style.display = 'block';
-      toggleButton.innerHTML = '▲';
-    } else {
-      fieldsContainer.style.display = 'none';
-      toggleButton.innerHTML = '▼';
-    }
-  }
-
-  function submitDates() {
-    const startDate = document.getElementById('start-date').value;
-    const endDate = document.getElementById('end-date').value;
-
-    if (!startDate || !endDate) {
-      alert('Vui lòng chọn cả hai ngày.');
-      return;
-    }
-
-    if (new Date(startDate) > new Date(endDate)) {
-      alert('Ngày bắt đầu phải trước ngày kết thúc.');
-      return;
-    }
-
-    alert(`Bạn đã chọn từ ngày ${startDate} đến ngày ${endDate}`);
-  }
-</script>
 <script type="text/javascript">
   if (document.location.hostname == 'pratikborsadiya.in') {
     (function (i, s, o, g, r, a, m) {

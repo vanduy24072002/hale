@@ -17,7 +17,7 @@ spring:
         - id: inventory-service
           uri: lb://inventory-service
           predicates:
-            - Path= /api/v1/inventory-service/** , /inventory/v3/api-docs
+            - Path= /api/v1/warehouse-service/** , /inventory/v3/api-docs
           filters:
             - AuthenticationFilter
         - id: borrow-service

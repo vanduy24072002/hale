@@ -30,6 +30,8 @@ public enum Status {
                 return Status.NOT_APPROVED;
             case -1:
                 return Status.LOCKED;
+            case -3:
+                return Status.CANCEL;
             default:
                 return Status.OTHER;
         }

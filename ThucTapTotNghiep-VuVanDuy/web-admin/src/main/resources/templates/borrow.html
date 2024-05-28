@@ -196,11 +196,12 @@
 
         // Encode parameters before appending to URL
 
-        const encodedStatus = encodeURIComponent(status);
-        const encodedStartDate = encodeURIComponent(startDate);
-        const encodedEndDate = encodeURIComponent(endDate);
 
-        var url = `/admin/findByFilter?status=${encodedStatus}&fromDate=${encodedStartDate}&toDate=${encodedEndDate}`;
+         var encodedStatus = (status == "null") ? "" : encodeURIComponent(status);
+         var encodedStartDate = encodeURIComponent(startDate);
+         var encodedEndDate = encodeURIComponent(endDate);
+
+        var url ='/admin/findByFilter?status=' + encodedStatus + '&fromDate='+ encodedStartDate + '&toDate='+ encodedEndDate;
         window.location.href = url;
         // alert(`Bạn đã chọn từ ngày ${startDate} đến ngày ${endDate}`);
     }

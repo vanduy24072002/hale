@@ -13,4 +13,11 @@ public class CategoryDTO {
     private String name;
     private String status;
     private String nameShort;
+    private Boolean isDelete ;
+
+    public CategoryDTO(Long id, String name, String nameShort) {
+        this.id = id;
+        this.name = name;
+        this.nameShort = nameShort;
+    }
 }

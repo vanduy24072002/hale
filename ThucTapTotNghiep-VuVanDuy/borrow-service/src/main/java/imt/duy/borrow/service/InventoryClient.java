@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 @FeignClient(name = "inventory-service" , url = "${inventory-service.url}")
 public interface InventoryClient {
-    String root = "/api/v1/inventory-service";
+    String root = "/api/v1/warehouse-service";
     @GetMapping({root+ "/isInStock"})
     InventoryResponse isInStock(@RequestParam Long bookCode, @RequestParam Integer quantity);
 

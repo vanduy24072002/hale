@@ -1,16 +1,18 @@
 package com.duyvv.controller;
 
+import com.duyvv.dto.Filter;
 import com.duyvv.dto.InventoryDTO;
 import com.duyvv.dto.InventoryResponse;
 import com.duyvv.service.InventoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/inventory-service")
+@RequestMapping("/api/v1/warehouse-service")
 @CrossOrigin(origins = "http://localhost:9000")
 @RequiredArgsConstructor
 public class InventoryController {
@@ -52,6 +54,9 @@ public class InventoryController {
     public String activeInventory(@RequestParam Long id){
         return inventoryService.activeInventory(id);
     }
-
+    @PostMapping("/findByFilter")
+    public ResponseEntity<List<InventoryDTO>> findBorrowByRequest(@RequestBody Filter filter) {
+        return new ResponseEntity<List<InventoryDTO>>(inventoryService.findByFilter(filter), HttpStatus.OK);
+    }
 }
 

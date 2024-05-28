@@ -40,7 +40,7 @@
             </div>
             <div class="mb-3">
               <label class="form-label" for="exampleSelect1">Thể loại</label>
-              <select class="form-control" id="exampleSelect1" th:name="${book.category}">
+              <select class="form-control" id="exampleSelect1" th:name="category">
                 <option value="">--Chọn danh mục--</option>
                 <option th:each="category : ${categories}"
                         th:value="${category.id}"
@@ -56,6 +56,10 @@
             <div class="mb-3" th:if="${param.id == null}">
               <label class="form-label">Số lượng</label>
               <input class="form-control" min="0" type="number" th:name="quantity"  placeholder="Enter quantity">
+            </div>
+            <div class="mb-3" th:if="${param.id == null}">
+              <label class="form-label">Vị trí</label>
+              <input class="form-control" type="text" th:name="position"  placeholder="Enter position">
             </div>
             <div class="mb-3">
               <label class="form-label">Hình ảnh</label>
@@ -83,8 +87,8 @@
 
     <div class="col-md-6">
       <img id="previewImage" th:src="${book.images}" alt="Hình ảnh" width="400" height="500">
-      <h4>John Doe</h4>
-      <p>FrontEnd Developer</p>
+      <h4>Hình ảnh</h4>
+<!--      <p>FrontEnd Developer</p>-->
     </div>
   </div>
 

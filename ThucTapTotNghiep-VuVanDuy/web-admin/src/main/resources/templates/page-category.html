@@ -51,23 +51,27 @@
                         <div class="tile ">
                             <h3 class="tile-title align-items-md-center">Thông tin hạng mục</h3>
                             <div class="tile-body align-items-md-center">
-                                <form class="login-form" th:action="@{/admin/createNewAccount}" method="post" enctype="multipart/form-data">
-
+                                <form class="login-form" th:action="@{/admin/addOrUpdateCategory}" method="post">
                                     <div class="row mb-4">
-                                        <div class="col-md-5">
-                                            <label>Tên hạng mục</label>
-                                            <input class="form-control" type="text" th:name="name">
+                                        <div class="col-md-1">
+                                            <label>Id</label>
+                                            <input class="form-control" type="text" name="id" id="id">
                                         </div>
                                         <div class="col-md-5">
+                                            <label>Tên hạng mục</label>
+                                            <input class="form-control" type="text" name="name" id="name">
+                                        </div>
+                                        <div class="col-md-3">
                                             <label>Tên viết tắt</label>
-                                            <input class="form-control" type="text" th:name="nameShort">
+                                            <input class="form-control" type="text" name="nameShort" id="nameShort">
+                                        </div>
+                                        <div  class="mb-3" th:if="${message}" th:style="${message eq 'thành công' ? 'color: blue;' : 'color: red;'}">
+                                            <p th:text="${message}"></p>
                                         </div>
                                     </div>
                                     <div class="tile-footer">
-                                        <button class="btn btn-primary" type="submit"><i class="bi bi-check-circle-fill me-2"></i>Save
-                                        </button>
-                                        <a class="btn btn-secondary"><i
-                                                class="bi bi-x-circle-fill me-2"></i>Cancel</a>
+                                        <button class="btn btn-primary" type="submit"><i class="bi bi-check-circle-fill me-2"></i>Lưu</button>
+                                        <a class="btn btn-secondary"><i class="bi bi-x-circle-fill me-2"></i>Hủy</a>
                                     </div>
                                 </form>
                             </div>
@@ -88,19 +92,19 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr th:each="category : ${categories}">
+                            <tr th:each="category : ${categories}" th:data-id="${category.id}" th:data-name="${category.name}" th:data-name-short="${category.nameShort}" th:data-status="${category.status}" class="table-row">
                                 <td th:text="${category.id}"></td>
                                 <td th:text="${category.name}"></td>
                                 <td th:text="${category.nameShort}"></td>
-
                                 <td th:text="${category.status}"></td>
                                 <td>
                                     <div class="btn-group row-cols-3">
-<!--                                        <a class="btn btn-primary" href="#"><i class="bi bi-plus-square fs-5"></i></a>-->
-                                        <a class="btn btn-primary" th:href="@{/admin/detail(id=${category.id})}">
-                                            <i class="bi bi-pencil-square fs-5"></i>
-                                        </a>
-                                        <a class="btn btn-secondary" th:data-id="${category.id}" id="deleteButton"><i class="bi bi-trash fs-5"></i></a>
+<!--                                        <a class="btn btn-primary" th:href="@{/admin/detail(id=${category.id})}">-->
+<!--                                            <i class="bi bi-pencil-square fs-5"></i>-->
+<!--                                        </a>-->
+                                        <a class="btn btn-danger" th:if="${category.isDelete}" th:data-id="${category.id}" id="deleteButton"><i class="bi bi-trash fs-5"></i></a>
+                                        <a class="btn btn-danger" th:if="${!category.isDelete}" disabled="disabled" ><i class="bi bi-trash fs-5"></i></a>
+
                                     </div>
                                 </td>
                             </tr>
@@ -118,6 +122,28 @@
 <!-- Page specific javascripts-->
 <link rel="stylesheet" href="https://cdn.datatables.net/v/bs5/dt-1.13.4/datatables.min.css">
 <!-- Data table plugin-->
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const rows = document.querySelectorAll('.table-row');
+        rows.forEach(row => {
+            row.addEventListener('click', function() {
+                const id = this.getAttribute('data-id');
+                const name = this.getAttribute('data-name');
+                const nameShort = this.getAttribute('data-name-short');
+                const status = this.getAttribute('data-status');
+
+                document.getElementById('id').value = id;
+                document.getElementById('name').value = name;
+                document.getElementById('nameShort').value = nameShort;
+                // Nếu bạn cần hiển thị trạng thái hoặc các trường khác, hãy thêm chúng vào biểu mẫu và thiết lập giá trị tại đây
+
+                // Bạn cũng có thể ẩn/hiển thị form tại đây nếu cần
+                // document.querySelector('.login-form').style.display = 'block'; // Hiển thị form
+            });
+        });
+    });
+</script>
 <script type="text/javascript" src="/js/plugins/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="/js/plugins/dataTables.bootstrap.min.js"></script>
 <script type="text/javascript">$('#sampleTable').DataTable();</script>

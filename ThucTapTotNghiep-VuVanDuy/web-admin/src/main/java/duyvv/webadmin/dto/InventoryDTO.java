@@ -15,6 +15,9 @@ public class InventoryDTO {
     private Integer quantity ;
     private Integer status ;
     private LocalDateTime importDate ;
+    private String position ;
+    private Integer remain ;
+    private Integer borrowed ;
     // Data Book
     private String codeBook;
     private String title;

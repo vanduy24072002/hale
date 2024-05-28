@@ -121,7 +121,7 @@ public class WebAdminService {
         System.out.println(book.getImages());
         HttpEntity<RequestBook> requestEntity = new HttpEntity<RequestBook>(book, headers);
         if(id == null){
-            return restTemplate.postForObject(UrlService.API_GATEWAY_URL + UrlService.INVENTORY_SERVICE + "/import", requestEntity, String.class);
+            return restTemplate.postForObject(UrlService.API_GATEWAY_URL + UrlService.WAREHOUSE_SERVICE + "/import", requestEntity, String.class);
         }
         book.setId(id);
         requestEntity = new HttpEntity<RequestBook>(book, headers);
@@ -234,14 +234,23 @@ public class WebAdminService {
         return restTemplate.exchange(UrlService.API_GATEWAY_URL + UrlService.USER_SERVICE + "/updateStatusUser?id=" + id + "&action=" + idAction, HttpMethod.GET, entity, String.class);
     }
 
-    public ModelAndView inventoryPage(UserHolder userHolder) {
+    public ModelAndView warehousePage(UserHolder userHolder, Boolean isFilter,Integer status, LocalDateTime fromDate, LocalDateTime endDate) {
         ModelAndView model = new ModelAndView("page-inventory");
+        if(isFilter){
+            model.addObject("warehouses", findWarehouseByFilter(
+                    (status == null) ? null : status,
+                    (fromDate == null) ? null : fromDate,
+                    (endDate == null) ? null : endDate
+            ));
+            model.addObject("user", userHolder);
+            return model;
+        }
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + userHolder.getToken());
         HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
-        ResponseEntity<InventoryDTO[]> responseInventorys = restTemplate.exchange(UrlService.API_GATEWAY_URL + UrlService.INVENTORY_SERVICE + "/getAllBookInventory", HttpMethod.GET, entity, InventoryDTO[].class);
+        ResponseEntity<InventoryDTO[]> responseInventorys = restTemplate.exchange(UrlService.API_GATEWAY_URL + UrlService.WAREHOUSE_SERVICE + "/getAllBookInventory", HttpMethod.GET, entity, InventoryDTO[].class);
 
-        model.addObject("inventorys", responseInventorys.getBody());
+        model.addObject("warehouses", responseInventorys.getBody());
         model.addObject("user", userHolder);
         return model;
     }
@@ -251,7 +260,7 @@ public class WebAdminService {
         headers.set("Authorization", "Bearer " + userHolder.getToken());
         HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
 
-        return restTemplate.exchange(UrlService.API_GATEWAY_URL + UrlService.INVENTORY_SERVICE+ "/deleteInventory?id=" + id, HttpMethod.GET, entity, String.class);
+        return restTemplate.exchange(UrlService.API_GATEWAY_URL + UrlService.WAREHOUSE_SERVICE+ "/deleteInventory?id=" + id, HttpMethod.GET, entity, String.class);
     }
 
     public String addQuantity(Long id, Integer quantity) {
@@ -261,7 +270,7 @@ public class WebAdminService {
         inventory.setIdBook(id);
         inventory.setQuantity(quantity);
         HttpEntity<InventoryDTO> requestEntity = new HttpEntity<InventoryDTO>(inventory, headers);
-        return restTemplate.postForObject(UrlService.API_GATEWAY_URL + UrlService.INVENTORY_SERVICE + "/import", requestEntity, String.class);
+        return restTemplate.postForObject(UrlService.API_GATEWAY_URL + UrlService.WAREHOUSE_SERVICE + "/import", requestEntity, String.class);
 
     }
 
@@ -270,7 +279,7 @@ public class WebAdminService {
         headers.set("Authorization", "Bearer " + userHolder.getToken());
         HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
 
-        return restTemplate.exchange(UrlService.API_GATEWAY_URL + UrlService.INVENTORY_SERVICE+ "/activeInventory?id=" + id, HttpMethod.GET, entity, String.class);
+        return restTemplate.exchange(UrlService.API_GATEWAY_URL + UrlService.WAREHOUSE_SERVICE+ "/activeInventory?id=" + id, HttpMethod.GET, entity, String.class);
     }
 
     public ModelAndView changePassword(Long id, ChangePassword password, UserHolder userHolder) {
@@ -368,7 +377,6 @@ public class WebAdminService {
     }
 
     public BorrowDTO[] findBorrowByFilter(Integer status, LocalDateTime fromDate, LocalDateTime endDate) {
-//        ModelAndView model = new ModelAndView("borrow");
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + userHolder.getToken());
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -376,9 +384,26 @@ public class WebAdminService {
         HttpEntity<Filter> entity = new HttpEntity<Filter>(filter, headers);
         BorrowDTO[] response = restTemplate.postForObject(UrlService.API_GATEWAY_URL + UrlService.BORROW_SERVICE + "/findByFilter", entity, BorrowDTO[].class);
 
+        return response ;
+    }
+    public InventoryDTO[] findWarehouseByFilter(Integer status, LocalDateTime fromDate, LocalDateTime endDate) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + userHolder.getToken());
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        Filter filter = new Filter(fromDate,endDate,status);
+        HttpEntity<Filter> entity = new HttpEntity<Filter>(filter, headers);
+        InventoryDTO[] response = restTemplate.postForObject(UrlService.API_GATEWAY_URL + UrlService.WAREHOUSE_SERVICE + "/findByFilter", entity, InventoryDTO[].class);
 
-//        model.addObject("borrows", response);
-//        model.addObject("user", userHolder);
+        return response ;
+    }
+
+    public String addOrUpdateCategory(CategoryDTO categoryDTO) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + userHolder.getToken());
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<CategoryDTO> entity = new HttpEntity<CategoryDTO>(categoryDTO, headers);
+        String response = restTemplate.postForObject(UrlService.API_GATEWAY_URL + UrlService.BOOK_SERVICE + "/addOrUpdateCategory", entity, String.class);
+
         return response ;
     }
 }

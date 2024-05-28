@@ -13,4 +13,8 @@ public class InventoryDTO {
     private Long bookCode ;
     private Status status ;
     private Integer quantity ;
+    private String position ;
+    private Integer remain ;
+    private Integer borrowed ;
+
 }

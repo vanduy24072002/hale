@@ -21,4 +21,7 @@ public class Inventory extends NewBaseEntities {
     private Long id;
     private Long idBook;
     private Integer quantity;
+    private String position ;
+    private Integer remain ;
+    private Integer borrowed ;
 }
